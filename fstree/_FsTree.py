@@ -66,6 +66,22 @@ class FsTree(DirNode):
             res = cur_dirnode
         return res
 
+    def add_dict(self, dictionary, root_parent_dir=None):
+        # TODO: Move onto `DirNode`
+        for parent_dirname, child in dictionary.items():
+            if root_parent_dir is None:
+                parent_path = parent_dirname
+            else:
+                parent_path = '/'.join([root_parent_dir, parent_dirname])
+
+            if isinstance(child, dict):
+                if child == {}:
+                    self.add_dir(parent_path)
+                else:
+                    self.add_dict(child, root_parent_dir=parent_path)
+            else:
+                self.add_file(parent_path, content=child)
+
     def open(self, file_path, mode='r'):
         if 'w' in mode:
             filenode = self.add_file(file_path)

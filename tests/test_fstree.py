@@ -218,3 +218,30 @@ def test_as_list_works(fs_paths, exp, monkeypatch):
         tree.add(fs_path)
     assert tree.as_list() == exp
 
+def test_add_dict_creates_files_with_content():
+    tree = fstree.FsTree()
+    tree.add_dict({'C:': {'file': 'test'}})
+    assert tree.open('C:/file', 'r').read() == 'test'
+
+@pytest.mark.parametrize('fs_dict, exp_dir_paths', [
+    ({'C:': {}},                     ['C:']),
+    ({'C:': {'d1': {}}},             ['C:', 'C:/d1']),
+    ({'C:': {'f1': None}},           ['C:']),
+    ({'C:': {'d1': {}, 'f1': None}}, ['C:', 'C:/d1']),
+])
+def test_add_dict_adds_directories(fs_dict, exp_dir_paths):
+    tree = fstree.FsTree()
+    tree.add_dict(fs_dict)
+    assert tree.get_fs_dirpaths() == exp_dir_paths
+
+@pytest.mark.parametrize('fs_dict, exp_dir_paths', [
+    ({'C:/d1': {}},              {'C:': {'d1': {}}}),
+    ({'C:/d1/d2': {}},           {'C:': {'d1': {'d2': {}}}}),
+    ({'~/dev': {}},              {'~': {'dev': {}}}),
+    ({'~/dev': {'foo/bar': {}}}, {'~': {'dev': {'foo': {'bar': {}}}}}),
+])
+def test_add_dict_converts_paths_with_subdirs_into_nodes(fs_dict, exp_dir_paths):
+    tree = fstree.FsTree()
+    tree.add_dict(fs_dict)
+    assert tree.as_dict() == exp_dir_paths
+
