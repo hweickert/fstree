@@ -245,3 +245,22 @@ def test_add_dict_converts_paths_with_subdirs_into_nodes(fs_dict, exp_dir_paths)
     tree.add_dict(fs_dict)
     assert tree.as_dict() == exp_dir_paths
 
+# @pytest.mark.xfail(reason='this should behave like the regular walk')
+@pytest.mark.parametrize(
+    'fsdict,                                   path, exp_roots,                   exp_dir_lists,        exp_file_lists', [
+    ({'C:': {}},                               None, ['C:'],                      [[]                ], [[]                ]),
+    ({'C:': {'d1': {}}},                       None, ['C:', 'C:/d1'],             [['d1'], []        ], [[], []            ]),
+    ({'C:': {'d1': {'d2': {}}}},               None, ['C:', 'C:/d1', 'C:/d1/d2'], [['d1'], ['d2'], []], [[], [], []        ]),
+    ({'C:': {'d1': {}, 'f1': None}},           None, ['C:', 'C:/d1'],             [['d1'], []        ], [['f1'], []        ]),
+    ({'C:': {'d1': {'f2': None}, 'f1': None}}, None, ['C:', 'C:/d1'],             [['d1'], []    ],     [['f1'], ['f2']    ]),
+])
+def test_walk_finds_roots_dirs_and_files(fsdict, path, exp_roots, exp_dir_lists, exp_file_lists):
+    tree = fstree.FsTree()
+    tree.add_dict(fsdict)
+
+    gen_walk = tree.walk()
+    for exp_dir_list, exp_file_list in zip(exp_dir_lists, exp_file_lists):
+        (root, dirs, files) = next(gen_walk)
+        # assert root == exp_root
+        assert dirs == exp_dir_list
+        assert files == exp_file_list

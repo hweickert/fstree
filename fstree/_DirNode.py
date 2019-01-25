@@ -1,6 +1,6 @@
 from . _Node import Node
 from . _FileNode import FileNode
-from . _shared import node_matches_type, TYPE_ALL
+from . _shared import node_matches_type, TYPE_ALL, TYPE_DIR, TYPE_FILE
 
 
 class DirNode(Node):
@@ -43,6 +43,45 @@ class DirNode(Node):
     def clear(self):
         ''' Clears all children. '''
         self.children = ()
+
+
+    def walk(self):
+        ''' Very similar to `os.walk` but yields `DirNode` and `FileNode` instances. '''
+        # Not yet supported parameters: topdown=True, onerror=None, followlinks=False
+
+        for root, dir_nodes, file_nodes in _walk_recursive(self, self.name):
+            dir_names = [dir_node.name for dir_node in dir_nodes]
+            file_names = [file_node.name for file_node in file_nodes]
+            yield (root, dir_names, file_names)
+
+
+    def walk_nodes(self):
+        ''' Very similar to `os.walk` but yields `DirNode` and `FileNode` instances. '''
+        # Not yet supported parameters: topdown=True, onerror=None, followlinks=False
+
+        for elem in _walk_recursive(self):
+            yield elem
+
+
+def _walk_recursive(rootnode, prefix=None):
+    sub_rootnode = rootnode
+    sub_dir_children = []
+    sub_file_children = []
+    for sub_child in sub_rootnode.children:
+        if node_matches_type(sub_child, TYPE_DIR):
+            sub_dir_children.append(sub_child)
+        elif node_matches_type(sub_child, TYPE_FILE):
+            sub_file_children.append(sub_child)
+
+    yield (prefix, sub_dir_children, sub_file_children)
+
+    for dir_node in sub_dir_children:
+        if prefix is None:
+            for elem in _walk_recursive(dir_node, dir_node.name):
+                yield elem
+        else:
+            for elem in _walk_recursive(dir_node, prefix+'/'+dir_node.name):
+                yield elem
 
 
 def _find_nodes_recursive(node, pat_parts, level, type_):

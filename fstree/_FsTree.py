@@ -82,6 +82,13 @@ class FsTree(DirNode):
             else:
                 self.add_file(parent_path, content=child)
 
+    def walk(self, top=None):
+        if top is None:
+            node = self.children[0]
+        else:
+            node = self._find_or_raise(top, TYPE_DIR)
+        return node.walk()
+
     def open(self, file_path, mode='r'):
         if 'w' in mode:
             filenode = self.add_file(file_path)
