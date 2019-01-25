@@ -109,3 +109,10 @@ class FsTree(DirNode):
     def _raise_file_not_found(self, file_path):
         msg = "No such file or directory: '{}'".format(file_path)
         raise IOError(msg)
+
+    def _find_or_raise(self, path, type_):
+        nodes = self.find(path, type_)
+        if not nodes:
+            raise IOError("The system cannot find the path specified: '{}/*.*'".format(path))
+        res = nodes[0]
+        return res
