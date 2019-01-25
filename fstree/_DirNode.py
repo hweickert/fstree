@@ -39,6 +39,12 @@ class DirNode(Node):
                 else:
                     res.append(prefix + child.name)
 
+
+    def clear(self):
+        ''' Clears all children. '''
+        self.children = ()
+
+
 def _find_nodes_recursive(node, pat_parts, level, type_):
     res = []
     islast = level == len(pat_parts) - 1
