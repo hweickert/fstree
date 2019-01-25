@@ -200,3 +200,21 @@ def test_add_file_flips_fwdslashes_on_win(filepath, exp, monkeypatch):
     tree = fstree.FsTree()
     tree.add_file(filepath)
     assert tree.as_dict() == exp
+
+@pytest.mark.parametrize('fs_paths, exp', [
+    ([], []),
+    (['r'], ['r']),
+    (['r/f'], ['r/f']),
+    (['r/f/f2'], ['r/f/f2']),
+    (['/r'], ['/r']),
+    (['/r/d'], ['/r/d']),
+    (['/r/d/c'], ['/r/d/c']),
+    (['/dir/', '/bar/', '/bar/spam'], ['/dir/', '/bar/spam']),
+    (['dir/', '/bar/', '/bar/spam'], ['dir/', '/bar/spam']),
+])
+def test_as_list_works(fs_paths, exp, monkeypatch):
+    tree = fstree.FsTree()
+    for fs_path in fs_paths:
+        tree.add(fs_path)
+    assert tree.as_list() == exp
+

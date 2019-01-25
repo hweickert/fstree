@@ -22,6 +22,23 @@ class DirNode(Node):
                 res.io.seek(0)
             return res
 
+    def as_list(self):
+        ''' Return a list of absolute paths. '''
+        res = []
+        self._as_list_recursive(self, res, '')
+        return res
+
+    def _as_list_recursive(self, parent, res, prefix):
+        for child in parent.children:
+            if child.children:
+                self._as_list_recursive(child, res, prefix + child.name + '/')
+            else:
+                # leaf node
+                if isinstance(child, DirNode):
+                    res.append(prefix + child.name + '/')
+                else:
+                    res.append(prefix + child.name)
+
 def _find_nodes_recursive(node, pat_parts, level, type_):
     res = []
     islast = level == len(pat_parts) - 1
