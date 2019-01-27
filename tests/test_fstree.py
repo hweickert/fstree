@@ -101,9 +101,8 @@ def test_open_append_written_test_can_be_read():
 ])
 def test_open_read_without_file_raises_ioerror(filepath):
     tree = fstree.FsTree()
-    with pytest.raises(IOError):
-        with tree.open(filepath, 'r') as file_:
-            pass
+    with pytest.raises(EnvironmentError):
+        tree.open(filepath, 'r')
 
 
 @pytest.mark.parametrize('filepaths,exp', [

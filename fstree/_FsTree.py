@@ -117,25 +117,33 @@ class FsTree(DirNode):
         parts = file_path.split('/')
         for part in parts[:-1]:
             if curnode is None:
-                self._raise_file_not_found(file_path)
+                self._raise_not_found(file_path)
             curnode = curnode.get_child(part, DirNode)
 
         if curnode is None:
-            self._raise_file_not_found(file_path)
+            self._raise_not_found(file_path)
 
         filenode = curnode.get_child(parts[-1], FileNode)
         if not filenode:
-            self._raise_file_not_found(file_path)
+            self._raise_not_found(file_path)
 
         return filenode
 
-    def _raise_file_not_found(self, file_path):
-        msg = "No such file or directory: '{}'".format(file_path)
-        raise IOError(msg)
-
     def _find_or_raise(self, path, type_):
         nodes = self.find(path, type_)
+
         if not nodes:
-            raise IOError("The system cannot find the path specified: '{}/*.*'".format(path))
+            if type_ == TYPE_FILE:
+                raise EnvironmentError("File not found: '{}'".format(path))
+            elif type_ == TYPE_DIR:
+                raise EnvironmentError("Directory not found: '{}'".format(path))
+            elif type_ == TYPE_ALL:
+                self._raise_not_found(name)
+
         res = nodes[0]
+
         return res
+
+    def _raise_not_found(self, file_path):
+        raise EnvironmentError("No such file or directory: '{}'".format(file_path))
+
