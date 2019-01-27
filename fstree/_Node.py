@@ -2,6 +2,11 @@ from anytree import Node as BaseNode
 
 
 class Node(BaseNode):
+    def remove(self):
+        if self.children:
+            raise EnvironmentError("Cannot remove node '{}' which has children.".format(self.name))
+        self.parent.children = tuple([child for child in self.parent.children if child != self])
+
     def as_dict(self):
         res = {}
         for child in self.children:
