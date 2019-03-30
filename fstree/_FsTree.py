@@ -1,7 +1,7 @@
 import sys
 from . _DirNode import DirNode
 from . _FileNode import FileNode
-from . _shared import TYPE_FILE, TYPE_DIR
+from . _shared import TYPE_FILE, TYPE_DIR, TYPE_ALL
 
 
 class FsTree(DirNode):
