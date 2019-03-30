@@ -9,6 +9,14 @@ class DirNode(Node):
         res = _find_nodes_recursive(self, pat_parts, 0, type)
         return res
 
+    def get_fs_filepaths(self):
+        res = [desc.get_fspath() for desc in self.descendants if isinstance(desc, FileNode)]
+        return res
+
+    def get_fs_dirpaths(self):
+        res = [desc.get_fspath() for desc in self.descendants if isinstance(desc, DirNode)]
+        return res
+
     def get_or_add_child_filenode(self, filename, content):
         exist_node = self.get_child(filename)
         if exist_node:

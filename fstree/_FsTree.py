@@ -13,14 +13,6 @@ class FsTree(DirNode):
         else:
             self._flip_backslashes = flip_backslashes
 
-    def get_fs_filepaths(self):
-        res = [desc.get_fspath() for desc in self.descendants if isinstance(desc, FileNode)]
-        return res
-
-    def get_fs_dirpaths(self):
-        res = [desc.get_fspath() for desc in self.descendants if isinstance(desc, DirNode)]
-        return res
-
     def add(self, path, content=None):
         '''
             Convenience wrapper to add a file OR directory.
