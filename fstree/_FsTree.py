@@ -130,7 +130,7 @@ class FsTree(DirNode):
             elif type_ == TYPE_DIR:
                 raise EnvironmentError("Directory not found: '{}'".format(path))
             elif type_ == TYPE_ALL:
-                self._raise_not_found(name)
+                self._raise_not_found(path)
 
         res = nodes[0]
 
