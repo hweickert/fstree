@@ -5,6 +5,7 @@ from . _shared import node_matches_type, TYPE_ALL, TYPE_DIR, TYPE_FILE
 
 class DirNode(Node):
     def find(self, path, type=TYPE_ALL):
+        path = path.rstrip('/')
         pat_parts = path.split('/')
         res = _find_nodes_recursive(self, pat_parts, 0, type)
         return res
