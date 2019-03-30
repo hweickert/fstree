@@ -127,16 +127,19 @@ def test_filepaths_and_dirpaths_works(filepaths, dirpaths, exp_filepaths, exp_di
     assert exp_dirpaths == tree.get_fs_dirpaths()
 
 @pytest.mark.parametrize('files, path, exp', [
-    ([],          'D',    False),
-    (['D'],       'D/D',  False),
-    (['D/D3'],    'D/D2', False),
-    (['D/D2'],    'D/D2', True),
-    (['D/D2/D3'], 'D/D2', True),
-    (['D/D2/D3'], 'D',    True),
+    ({},          'D',    False),
+    ({'D': {}},          'D/D',  False),
+    ({'D/D3': {}},       'D/D2', False),
+    ({'D/D2': {}},       'D/D2', True),
+    ({'D/D2/D3': {}},    'D/D2', True),
+    ({'D/D2/D3': {}},    'D',    True),
+    ({'D/D2/D3': {}},    'D/',   True),
+    ({'C:/D': {}},       'C:',   True),
+    ({'C:/D': {}},       'C:/',  True),
 ])
 def test_find(files, path, exp):
     tree = fstree.FsTree()
-    map(tree.add_file, files)
+    tree.add_dict(files)
     res = bool(tree.find(path))
     assert res == exp
 
