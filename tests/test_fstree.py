@@ -21,8 +21,8 @@ import fstree
 ])
 def test_add_file_and_add_dir(files, dirs, exp):
     tree = fstree.FsTree()
-    map(tree.add_file, files)
-    map(tree.add_dir, dirs)
+    [tree.add_file(item) for item in files]
+    [tree.add_dir(item) for item in dirs]
 
     res = tree.as_dict()
     assert res == exp
@@ -111,7 +111,7 @@ def test_open_read_without_file_raises_ioerror(filepath):
 ])
 def test_get_fs_filepaths(filepaths,exp):
     tree = fstree.FsTree()
-    map(tree.add_file, filepaths)
+    [tree.add_file(item) for item in filepaths]
     assert exp == tree.get_fs_filepaths()
 
 @pytest.mark.parametrize('filepaths, dirpaths, exp_filepaths, exp_dirpaths', [
@@ -121,8 +121,8 @@ def test_get_fs_filepaths(filepaths,exp):
 ])
 def test_filepaths_and_dirpaths_works(filepaths, dirpaths, exp_filepaths, exp_dirpaths):
     tree = fstree.FsTree()
-    map(tree.add_file, filepaths)
-    map(tree.add_dir, dirpaths)
+    [tree.add_file(item) for item in filepaths]
+    [tree.add_dir(item) for item in dirpaths]
     assert exp_filepaths == tree.get_fs_filepaths()
     assert exp_dirpaths == tree.get_fs_dirpaths()
 
@@ -266,3 +266,27 @@ def test_walk_finds_roots_dirs_and_files(fsdict, path, exp_roots, exp_dir_lists,
         # assert root == exp_root
         assert dirs == exp_dir_list
         assert files == exp_file_list
+
+def test_add_yaml_creates_files_with_content():
+    tree = fstree.FsTree()
+    tree.add_yaml(r'''
+        C:/:
+            file: test
+    ''')
+    assert tree.open('C:/file', 'r').read() == 'test'
+
+def test_add_expects_yaml_string_if_multi_lines():
+    tree = fstree.FsTree()
+    tree.add(r'''
+        C:/:
+            file: test
+    ''')
+    assert tree.open('C:/file', 'r').read() == 'test'
+
+def test_add_raises_if_no_known_type():
+    tree = fstree.FsTree()
+    tree.add(r'''
+        C:/:
+            file: test
+    ''')
+    assert tree.open('C:/file', 'r').read() == 'test'

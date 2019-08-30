@@ -1,5 +1,5 @@
 from . _Node import Node
-from . _FileNode import FileNode
+from . _FileNode import FileNode, BytesFileStringIO
 from . _shared import node_matches_type, TYPE_ALL, TYPE_DIR, TYPE_FILE
 
 
@@ -27,8 +27,9 @@ class DirNode(Node):
         else:
             res = FileNode(filename, parent=self)
             if content is not None:
-                res.create_new_io().write(content)
-                res.io.seek(0)
+                res_io = res.create_new_io(BytesFileStringIO if isinstance(content, bytes) else None)
+                res_io.write(content)
+                res_io.seek(0)
             return res
 
     def as_list(self):

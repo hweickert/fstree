@@ -14,6 +14,7 @@ setuptools.setup(
     keywords = [],
     entry_points={},
     install_requires=[
+        'six',
         'anytree==2.4.3',
     ]
 )

@@ -1,4 +1,10 @@
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    # py3
+    from io import StringIO
+import six
+
 from . _Node import Node
 
 
@@ -20,8 +26,15 @@ class FileNode(Node):
         return self.io
 
     def as_dict(self):
-        res = None
-        return res
+        if self.io is None:
+            res = None
+            return res
+        else:
+            previousPosition = self.io.tell()
+            self.io.seek(0)
+            res = self.io.read()
+            self.io.seek(previousPosition)
+            return res
 
 class FileStringIO(StringIO):
     def __enter__(self):
@@ -31,3 +44,10 @@ class FileStringIO(StringIO):
         self.seek(0)
         return False
 
+class BytesFileStringIO(six.BytesIO):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_info, exc_tb):
+        self.seek(0)
+        return False
