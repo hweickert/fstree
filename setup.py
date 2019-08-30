@@ -16,5 +16,6 @@ setuptools.setup(
     install_requires=[
         'six',
         'anytree==2.4.3',
+        'oyaml==0.9',
     ]
 )

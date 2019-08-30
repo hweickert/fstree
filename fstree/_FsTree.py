@@ -1,4 +1,6 @@
 import sys
+import textwrap
+import six
 from . _DirNode import DirNode
 from . _FileNode import FileNode
 from . _shared import TYPE_FILE, TYPE_DIR, TYPE_ALL
@@ -13,15 +15,24 @@ class FsTree(DirNode):
         else:
             self._flip_backslashes = flip_backslashes
 
-    def add(self, path, content=None):
+    def add(self, data, content=None):
         '''
             Convenience wrapper to add a file OR directory.
-            If `path` endswith a backslash, consider this a directory, otherwise a file.
+            If `data` endswith a backslash, consider this a directory, otherwise a file.
         '''
-        if path.endswith('/'):
-            self.add_dir(path)
+        if isinstance(data, dict):
+            self.add_dict(data)
+        elif isinstance(data, six.string_types):
+            if data.count('\n'):
+                self.add_yaml(data)
+            else:
+                data = textwrap.dedent(data)
+                if data.endswith('/'):
+                    self.add_dir(data)
+                else:
+                    self.add_file(data, content)
         else:
-            self.add_file(path, content)
+            raise ValueError(data)
 
     def add_file(self, file_path, content=None):
         if self._flip_backslashes:
@@ -73,6 +84,12 @@ class FsTree(DirNode):
                     self.add_dict(child, root_parent_dir=parent_path)
             else:
                 self.add_file(parent_path, content=child)
+
+    def add_yaml(self, yaml_string_dict, root_parent_dir=None):
+        import oyaml as yaml
+        yaml_string_dict = textwrap.dedent(yaml_string_dict)
+        dictionary = yaml.safe_load(yaml_string_dict)
+        self.add_dict(dictionary, root_parent_dir=root_parent_dir)
 
     def walk(self, top=None):
         if top is None:
