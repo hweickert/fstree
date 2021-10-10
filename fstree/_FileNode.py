@@ -8,6 +8,13 @@ import six
 from . _Node import Node
 
 
+__all__ = [
+    'FileNode',
+    'FileStringIO',
+    'BytesFileStringIO',
+]
+
+
 class FileNode(Node):
     def __init__(self, name, parent=None):
         Node.__init__(self, name, parent=parent)
