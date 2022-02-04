@@ -5,6 +5,11 @@ class Node(BaseNode):
     def remove(self):
         if self.children:
             raise EnvironmentError("Cannot remove node '{}' which has children.".format(self.name))
+
+        if self.parent is None:
+            # The parent node might have been deleted by now.
+            return
+
         self.parent.children = tuple([child for child in self.parent.children if child != self])
 
     def as_dict(self):
