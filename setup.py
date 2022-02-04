@@ -6,7 +6,7 @@ description = r'''A tree structure to store files & directories.'''
 setuptools.setup(
     name='fstree',
     packages = setuptools.find_packages(exclude=['tests*']),
-    version="1.0.5",
+    version="1.0.6",
     description=description,
     author = 'Henry Weickert',
     author_email = 'henryweickert@gmail.com',
