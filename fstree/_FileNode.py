@@ -1,3 +1,4 @@
+from datetime import datetime
 try:
     from StringIO import StringIO
 except ImportError:

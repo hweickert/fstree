@@ -1,7 +1,16 @@
+import copy
+from datetime import datetime
 from anytree import Node as BaseNode
 
 
 class Node(BaseNode):
+    def __init__(self, *a, **kwa):
+        BaseNode.__init__(self, *a, **kwa)
+
+        self.ctime = datetime.now()
+        self.mtime = copy.copy(self.ctime)
+        self.atime = copy.copy(self.ctime)
+
     def remove(self):
         if self.children:
             raise EnvironmentError("Cannot remove node '{}' which has children.".format(self.name))
